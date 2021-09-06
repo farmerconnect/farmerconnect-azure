@@ -11,12 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
 		README.md = README.md
+		.github\workflows\workflow-ci.yml = .github\workflows\workflow-ci.yml
 		.github\workflows\workflow-messaging.yml = .github\workflows\workflow-messaging.yml
-		.github\workflows\workflow-pr.yml = .github\workflows\workflow-pr.yml
 		.github\workflows\workflow-storage.yml = .github\workflows\workflow-storage.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerConnect.Azure.Tests", "tests\FarmerConnect.Azure.Tests\FarmerConnect.Azure.Tests.csproj", "{60C757BD-541D-4632-AA50-359337524D59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarmerConnect.Azure.Tests", "tests\FarmerConnect.Azure.Tests\FarmerConnect.Azure.Tests.csproj", "{60C757BD-541D-4632-AA50-359337524D59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
