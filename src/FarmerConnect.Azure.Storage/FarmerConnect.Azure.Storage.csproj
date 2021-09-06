@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.0.6-RC</Version>
+    <Version>0.0.7-RC</Version>
     <PackageTags>aspnetcore;azure;storage</PackageTags>
     <PackageId>FarmerConnect.Azure.Storage</PackageId>
     <Description>Please add a description of this package</Description>
