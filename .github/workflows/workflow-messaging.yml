@@ -1,0 +1,79 @@
+﻿name: FarmerConnect.Azure.Messaging
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - 'src/FarmerConnect.Azure.Messaging/**'
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  PACKAGE_NAME: FarmerConnect.Azure.Messaging
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  dotnet-format:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+
+    # Format the output of dotnet format
+    - name: Add dotnet-format problem matcher
+      uses: xt0rted/dotnet-format-problem-matcher@v1
+
+    # Install dotnet format as a global tool
+    - name: Install dotnet format
+      run: dotnet tool update --global dotnet-format
+
+    # Run dotnet format
+    # By default, the task ensure the exit code is 0
+    # If a file needs to be edited by dotnet format, the exit code will be a non-zero value
+    # So the task will fail
+    - name: Run dotnet format
+      run: dotnet format --fix-whitespace --fix-style warn --fix-analyzers warn --check --verbosity diagnostic
+
+  dotnet-build-test-pack:
+    needs: [dotnet-format]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+
+    - name: dotnet build
+      run: dotnet build --configuration Release
+
+    - name: dotnet test
+      run: dotnet test --configuration Release
+
+    - name: dotnet pack
+      run: dotnet pack .\src\${{ env.PACKAGE_NAME }}\  --configuration Release
+
+    - name: Archive nuget package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.PACKAGE_NAME }}
+        path: ./**/nupkg/**/*.nupkg
+
+  dotnet-push:
+    needs: [dotnet-format, dotnet-build-test-pack]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+
+    - name: dotnet nuget push
+      run: dotnet nuget push ./**/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/farmerconnect/index.json"
