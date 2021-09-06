@@ -17,6 +17,7 @@ namespace FarmerConnect.Azure.Tests.Blob
         }
 
         [Fact]
+        [Trait("Category", "Storage")]
         public async Task CreatingAContainerReturnsTheContainerAddress()
         {
             // Arrange 
@@ -31,6 +32,7 @@ namespace FarmerConnect.Azure.Tests.Blob
         }
 
         [Fact]
+        [Trait("Category", "Storage")]
         public async Task DeleteContainerReturns()
         {
             // Arrange 
@@ -47,6 +49,7 @@ namespace FarmerConnect.Azure.Tests.Blob
         [Theory]
         [InlineData("./TestFile1.png")]
         [InlineData("./TestFile2.csv")]
+        [Trait("Category", "Storage")]
         public async Task UploadFileReturnsARandomFileName(string filepath)
         {
             // Arrange
@@ -66,6 +69,7 @@ namespace FarmerConnect.Azure.Tests.Blob
         [Theory]
         [InlineData("./TestFile1.png", "image/png")]
         [InlineData("./TestFile2.csv", "application/octet-stream")]
+        [Trait("Category", "Storage")]
         public async Task UploadedFileReturnsCorrectStreamAndContentType(string filepath, string expectedContentType)
         {
             // Arrange
@@ -83,6 +87,7 @@ namespace FarmerConnect.Azure.Tests.Blob
         }
 
         [Fact]
+        [Trait("Category", "Storage")]
         public async Task DeleteExistingFileReturnsTrue()
         {
             // Arrange
@@ -100,6 +105,7 @@ namespace FarmerConnect.Azure.Tests.Blob
         }
 
         [Fact]
+        [Trait("Category", "Storage")]
         public async Task DeleteNotExistingFileReturnsFalse()
         {
             // Arrange
@@ -114,6 +120,7 @@ namespace FarmerConnect.Azure.Tests.Blob
         }
 
         [Fact]
+        [Trait("Category", "Storage")]
         public async Task UploadFileToAIncorrectContainerAddressThrowsAnException()
         {
             // Arrange

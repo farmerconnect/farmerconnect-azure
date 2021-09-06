@@ -64,7 +64,7 @@ jobs:
       run: azurite-blob &
 
     - name: dotnet test
-      run: dotnet test --configuration Release
+      run: dotnet test --configuration Release --filter "Category=Messaging"
 
     - name: dotnet pack
       run: dotnet pack .\src\${{ env.PACKAGE_NAME }}\  --configuration Release
