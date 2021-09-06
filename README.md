@@ -20,12 +20,17 @@ dotnet add package FarmerConnect.Azure.Storage
 Inside the `Startup.cs` add the following line of code to the `ConfigureServices` method to add the blob storage services:
 
 ```csharp
-
+services.AddBlobStorage(options =>
+{
+    options.ConnectionString = Configuration.GetConnectionString("AzureStorage");
+});
 ```
 
-### Table Storage
+You can now inject the `BlobStorageService` into your business logic to connect to the blob containers.
 
-## FarmerConnect.Azure.Messaging
+### Table Storage [WIP]
+
+## FarmerConnect.Azure.Messaging [WIP]
 
 [![NuGet Package Build](https://github.com/farmerconnect/FarmerConnect.Azure/actions/workflows/workflow-messaging.yml/badge.svg?branch=main)](https://github.com/farmerconnect/FarmerConnect.Azure/actions/workflows/workflow-messaging.yml)
 
