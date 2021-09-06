@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.0.3-RC</Version>
+    <Version>0.0.4-RC</Version>
     <PackageTags>aspnetcore;azure;messaging</PackageTags>
     <PackageId>FarmerConnect.Azure.Messaging</PackageId>
     <Description>Please add a description of this package...</Description>
