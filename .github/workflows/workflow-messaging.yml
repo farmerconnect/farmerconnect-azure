@@ -52,6 +52,16 @@ jobs:
     - name: dotnet build
       run: dotnet build --configuration Release
 
+    - name: Install NPM
+      uses: actions/setup-node@v1
+
+    - name: Install azurite
+      run: npm install -g azurite
+
+    - name: Run azurite
+      shell:  bash
+      run: azurite-blob &
+
     - name: dotnet test
       run: dotnet test --configuration Release
 
