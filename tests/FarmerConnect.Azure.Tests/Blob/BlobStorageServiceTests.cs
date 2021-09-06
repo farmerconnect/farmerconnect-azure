@@ -67,6 +67,27 @@ namespace FarmerConnect.Azure.Tests.Blob
         }
 
         [Theory]
+        [InlineData("./TestFile1.png", @"\test")]
+        [InlineData("./TestFile2.csv", @"\test2\test3")]
+        [Trait("Category", "Storage")]
+        public async Task UploadFileWithPathReturnsARandomFileName(string filepath, string expectedFolderPath)
+        {
+            // Arrange
+            var name = _fixture.GetContainerName();
+            var containerAddress = await _fixture.BlobStorageService.CreateContainer(name);
+
+            using var fileStream = File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+            // Act
+            var storageName = await _fixture.BlobStorageService.Upload(new Uri(containerAddress), Path.Combine(expectedFolderPath, Path.GetFileName(filepath)), fileStream);
+
+            // Assert
+            storageName.Should().NotBeNullOrEmpty();
+            storageName.Should().NotBe(Path.GetFileName(filepath));
+            storageName.Should().StartWith(expectedFolderPath);
+        }
+
+        [Theory]
         [InlineData("./TestFile1.png", "image/png")]
         [InlineData("./TestFile2.csv", "application/octet-stream")]
         [Trait("Category", "Storage")]

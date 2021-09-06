@@ -30,7 +30,8 @@ namespace FarmerConnect.Azure.Storage.Blob
         {
             var containerReference = new CloudBlobContainer(containerAddress);
             var trustedFileNameForFileStorage = Path.GetRandomFileName();
-            var blockBlobReference = containerReference.GetBlockBlobReference(trustedFileNameForFileStorage);
+            var path = Path.GetDirectoryName(blobName);
+            var blockBlobReference = containerReference.GetBlockBlobReference(Path.Combine(path, trustedFileNameForFileStorage));
 
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(blobName, out var contentType))
@@ -41,7 +42,7 @@ namespace FarmerConnect.Azure.Storage.Blob
 
             await blockBlobReference.UploadFromStreamAsync(content);
 
-            return trustedFileNameForFileStorage;
+            return Path.Combine(path, trustedFileNameForFileStorage);
         }
 
         /// <summary>
