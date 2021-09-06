@@ -1,39 +1,115 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
-using FarmerConnect.Azure.Storage.Blob;
 using FluentAssertions;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace FarmerConnect.Azure.Tests.Blob
 {
-    /// <summary>
-    /// NOTE: These tests require a blob storage account.
-    /// </summary>
-    public class BlobStorageServiceTests
+    public class BlobStorageServiceTests : IClassFixture<BlobStorageFixture>
     {
-        private readonly BlobStorageService _blobStorageService;
+        private readonly BlobStorageFixture _fixture;
 
-        public BlobStorageServiceTests()
+        public BlobStorageServiceTests(BlobStorageFixture fixture)
         {
-            var options = Options.Create(new BlobStorageOptions
-            {
-                ConnectionString = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
-            });
-            _blobStorageService = new BlobStorageService(options);
+            _fixture = fixture;
         }
 
         [Fact]
-        public async Task Test1()
+        public async Task CreatingAContainerReturnsTheContainerAddress()
         {
             // Arrange 
-            var name = Guid.NewGuid().ToString();
+            var name = _fixture.GetContainerName();
 
             // Act
-            var containerAddress = await _blobStorageService.CreateContainer(name);
+            var containerAddress = await _fixture.BlobStorageService.CreateContainer(name);
 
             // Assert
             containerAddress.Should().NotBeNullOrEmpty();
+            containerAddress.Should().Contain(name);
+        }
+
+        [Fact]
+        public async Task DeleteContainerReturns()
+        {
+            // Arrange 
+            var name = _fixture.GetContainerName();
+            _ = await _fixture.BlobStorageService.CreateContainer(name);
+
+            // Act
+            var result = await _fixture.BlobStorageService.DeleteContainer(name);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("./TestFile1.png")]
+        [InlineData("./TestFile2.csv")]
+        public async Task UploadFileReturnsARandomFileName(string filepath)
+        {
+            // Arrange
+            var name = _fixture.GetContainerName();
+            var containerAddress = await _fixture.BlobStorageService.CreateContainer(name);
+
+            using var fileStream = File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+            // Act
+            var storageName = await _fixture.BlobStorageService.Upload(new Uri(containerAddress), Path.GetFileName(filepath), fileStream);
+
+            // Assert
+            storageName.Should().NotBeNullOrEmpty();
+            storageName.Should().NotBe(Path.GetFileName(filepath));
+        }
+
+        [Theory]
+        [InlineData("./TestFile1.png", "image/png")]
+        [InlineData("./TestFile2.csv", "application/octet-stream")]
+        public async Task UploadedFileReturnsCorrectStreamAndContentType(string filepath, string expectedContentType)
+        {
+            // Arrange
+            var name = _fixture.GetContainerName();
+            var containerAddress = await _fixture.BlobStorageService.CreateContainer(name);
+
+            using var fileStream = File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var storageName = await _fixture.BlobStorageService.Upload(new Uri(containerAddress), Path.GetFileName(filepath), fileStream);
+
+            // Act
+            var (stream, contentType) = await _fixture.BlobStorageService.OpenRead(new Uri(containerAddress), storageName);
+
+            // Assert
+            contentType.Should().Be(expectedContentType);
+        }
+
+        [Fact]
+        public async Task DeleteExistingFileReturnsTrue()
+        {
+            // Arrange
+            var name = _fixture.GetContainerName();
+            var containerAddress = await _fixture.BlobStorageService.CreateContainer(name);
+
+            using var fileStream = File.Open("./TestFile1.png", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var storageName = await _fixture.BlobStorageService.Upload(new Uri(containerAddress), "TestFile1.png", fileStream);
+
+            // Act
+            var result = await _fixture.BlobStorageService.Delete(new Uri(containerAddress), storageName);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task DeleteNotExistingFileReturnsFalse()
+        {
+            // Arrange
+            var name = _fixture.GetContainerName();
+            var containerAddress = await _fixture.BlobStorageService.CreateContainer(name);
+
+            // Act
+            var result = await _fixture.BlobStorageService.Delete(new Uri(containerAddress), "TestFile1.png");
+
+            // Assert
+            result.Should().BeFalse();
         }
     }
 }

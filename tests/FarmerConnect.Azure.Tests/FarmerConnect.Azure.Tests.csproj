@@ -24,4 +24,13 @@
     <ProjectReference Include="..\..\src\FarmerConnect.Azure.Storage\FarmerConnect.Azure.Storage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestFile1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFile2.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
