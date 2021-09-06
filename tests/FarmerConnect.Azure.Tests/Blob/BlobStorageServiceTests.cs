@@ -24,7 +24,6 @@ namespace FarmerConnect.Azure.Tests.Blob
         }
 
         [Fact]
-        [Trait("Category", "Integration")]
         public async Task Test1()
         {
             // Arrange 
