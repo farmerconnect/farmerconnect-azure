@@ -6,6 +6,7 @@ on:
     - main
     paths:
     - 'src/FarmerConnect.Azure.Storage/**'
+    - '.github/workflow-storage.yml'
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
