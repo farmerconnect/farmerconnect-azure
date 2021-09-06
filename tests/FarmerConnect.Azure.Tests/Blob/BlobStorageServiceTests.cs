@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.WindowsAzure.Storage;
 using Xunit;
 
 namespace FarmerConnect.Azure.Tests.Blob
@@ -110,6 +111,18 @@ namespace FarmerConnect.Azure.Tests.Blob
 
             // Assert
             result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task UploadFileToAIncorrectContainerAddressThrowsAnException()
+        {
+            // Arrange
+            var containerAddress = $"http://127.0.0.1:10000/devstoreaccount1/{Guid.NewGuid()}?sv=2018-03-28&sr=c&si=default-access&sig=J1NAQzGLkAFrP5gIHyEeKCsmz6MoBvEm1Vq%2F6ZyGoBQ%3D";
+
+            using var fileStream = File.Open("./TestFile1.png", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+            // Act / Assert
+            await Assert.ThrowsAnyAsync<StorageException>(() => _fixture.BlobStorageService.Upload(new Uri(containerAddress), "TestFile1.png", fileStream));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace FarmerConnect.Azure.Storage.Blob
 {
     public class BlobStorageService
     {
-        private const string DefaultPolicyName = "organization-access";
+        private const string DefaultPolicyName = "default-access";
         private readonly BlobStorageOptions _options;
 
         public BlobStorageService(IOptions<BlobStorageOptions> options)
