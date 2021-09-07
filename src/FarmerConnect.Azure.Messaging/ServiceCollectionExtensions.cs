@@ -11,6 +11,8 @@ namespace FarmerConnect.Azure.Messaging
 
             services.AddSingleton<ServiceBusQueueConsumer>();
             services.AddSingleton<EventBusSubscriptionManager>();
+
+            services.AddHostedService<ServiceBusQueueConsumerBackgroundService>();
             return services;
         }
 
