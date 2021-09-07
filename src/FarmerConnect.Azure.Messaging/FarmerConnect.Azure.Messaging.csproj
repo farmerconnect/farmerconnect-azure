@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.0.4-RC</Version>
+    <Version>1.0.0.0</Version>
     <PackageTags>aspnetcore;azure;messaging</PackageTags>
     <PackageId>FarmerConnect.Azure.Messaging</PackageId>
     <Description>Please add a description of this package...</Description>
