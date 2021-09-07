@@ -92,7 +92,6 @@ jobs:
   dotnet-push:
     needs: [dotnet-format, dotnet-build-test-pack]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v2
