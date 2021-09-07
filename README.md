@@ -67,7 +67,7 @@ Register all the event handlers with the DI system of ASP.NET Core so that depen
 ```csharp
 // Add event handlers so that they can be resolved (Transient or Scoped)
 services.AddTransient<AcceptEventHandler>();
-
+```
 
 After defining the events and event handlers we need to register them with the `EventSubscriptionManager`. The easiest way to do this is by adding a background service that will be executed at the application startup and registers the events and event handlers.
 
