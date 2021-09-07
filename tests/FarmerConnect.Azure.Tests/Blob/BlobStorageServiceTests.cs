@@ -152,5 +152,20 @@ namespace FarmerConnect.Azure.Tests.Blob
             // Act / Assert
             await Assert.ThrowsAnyAsync<StorageException>(() => _fixture.BlobStorageService.Upload(new Uri(containerAddress), "TestFile1.png", fileStream));
         }
+
+        [Fact]
+        [Trait("Category", "Storage")]
+        public async Task OpenReadFileFromDifferentContainerReturnsEmpty()
+        {
+            // Arrange
+            var containerAddress1 = await _fixture.BlobStorageService.CreateContainer(_fixture.GetContainerName());
+            var containerAddress2 = await _fixture.BlobStorageService.CreateContainer(_fixture.GetContainerName());
+
+            using var fileStream = File.Open("./TestFile1.png", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var storageName = await _fixture.BlobStorageService.Upload(new Uri(containerAddress1), "TestFile1.png", fileStream);
+
+            // Assert
+            await Assert.ThrowsAnyAsync<StorageException>(() => _fixture.BlobStorageService.OpenRead(new Uri(containerAddress2), storageName));
+        }
     }
 }
