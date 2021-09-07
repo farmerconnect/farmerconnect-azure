@@ -1,5 +1,7 @@
 ﻿<img align="left" width="170" height="100" src=".github/fc-logo.png" />
 
+# FarmerConnect.Azure
+
 <br />
 
 This repository holds all the packages that have been standardized inside of FarmerConnect SA on how to use different Azure resources and patterns.
@@ -37,20 +39,35 @@ Coming soon...
 
 [![NuGet Package Build](https://github.com/farmerconnect/FarmerConnect.Azure/actions/workflows/workflow-messaging.yml/badge.svg?branch=main)](https://github.com/farmerconnect/FarmerConnect.Azure/actions/workflows/workflow-messaging.yml)
 
+This package has all you need to start of implementing a messaging pattern with Azure Service Bus. When adding the package and configuring the messaging using the extension method a background worker will register the consumer service.
+
+Add the package to the project that requires this functionality.
+
 ```powershell
 dotnet add package FarmerConnect.Azure.Messaging
 ```
 
-This package has all you need to start of implementing a messaging pattern with Azure Service Bus. When adding the package and configuring the messaging using the extension method a background worker will register the consumer service.
-
 ### Configuration
 
-Register all the event handlers with the DI system of ASP.NET Core that dependencies can be used.
+Add the consumer and / or the sender services by using the extension methods from the package inside of the `Startup.cs`.
+
+```csharp
+var azureServiceBusOptions = new AzureServiceBusOptions
+{
+    ConnectionString = Configuration["AzureServiceBus:ConnectionString"];
+    QueueName = Configuration["AzureServiceBus:Queuename"];
+};
+
+services.AddMessagingConsumer(azureServiceBusOptions);
+services.AddMessagingSender(azureServiceBusOptions);
+```
+
+Register all the event handlers with the DI system of ASP.NET Core so that dependencies can be used.
 
 ```csharp
 // Add event handlers so that they can be resolved (Transient or Scoped)
 services.AddTransient<AcceptEventHandler>();
-```
+
 
 After defining the events and event handlers we need to register them with the `EventSubscriptionManager`. The easiest way to do this is by adding a background service that will be executed at the application startup and registers the events and event handlers.
 
@@ -84,10 +101,37 @@ public class EventBusRegistrationBackgroundService : IHostedService
 
 ### Events
 
-### Event handlers
-Event handlers need to be registered with the DI System so that they can be instantiated during runtime.
+Events are classes that inherit from `IntegrationEvent`. Events are the payload that will be sent to the service bus queue in a serialized manner and can then be used by the consumer to do what ever they need to do.
 
 ```csharp
+public class AcceptEvent : IntegrationEvent
+{
+    public string TransactionId { get; set; }
+}
+```
+
+### Event handlers
+Event handlers need to be registered with the DI System so that they can be instantiated during runtime. Also they need to be registered with the subscription manager. It is possible to use any service that was registered through the DI system. But keep in mind there is no user context asscociated with the event handler. Event handlers need to implemente the `IIntegrationEventHandler`. It is possible to have multiple event handlers for the same event.
+
+```csharp
+public class AcceptEventHandler : IIntegrationEventHandler
+{
+    private readonly ILogger<AcceptEventHandler> _logger;
+
+    public AcceptEventHandler(ILogger<AcceptEventHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task Handle(object @event)
+    {
+        var integrationEvent = (AcceptEvent)@event;
+
+        _logger.LogInformation("Doing the stuff for {TransactionId}...", integrationEvent.TransactionId);
+        await Task.Delay(6000);
+        _logger.LogInformation("...finished the stuff.");
+    }
+}
 ```
 
 # Add GitHub to NuGet sources
