@@ -67,7 +67,7 @@ jobs:
       run: dotnet test --configuration Release --filter "Category=Storage"
 
     - name: dotnet pack
-      run: dotnet pack .\src\${{ env.PACKAGE_NAME }}\  --configuration Release
+      run: dotnet pack .\src\${{ env.PACKAGE_NAME }}\  --configuration Release --no-build
 
     - name: Archive nuget package
       uses: actions/upload-artifact@v2
