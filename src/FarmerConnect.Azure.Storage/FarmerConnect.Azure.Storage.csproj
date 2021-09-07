@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.0.9-RC</Version>
+    <Version>0.0.11-RC</Version>
     <PackageTags>aspnetcore;azure;storage</PackageTags>
     <PackageId>FarmerConnect.Azure.Storage</PackageId>
     <Description>FarmerConnect.Azure.Storage is a package that contains classes that can be used to access Azure storage in an easy and standardizied way.</Description>
