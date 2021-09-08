@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace FarmerConnect.Azure.Messaging.ServiceBus
             _client = new ServiceBusClient(_options.ConnectionString);
         }
 
-        public async Task SendMessage(IntegrationEvent @event)
+        public async Task SendMessage(IntegrationEvent @event, CancellationToken cancellationToken = default)
         {
             var eventName = @event.GetType().Name.Replace(INTEGRATION_EVENT_SUFFIX, "");
             var jsonMessage = JsonSerializer.Serialize(@event, @event.GetType());
@@ -34,7 +35,7 @@ namespace FarmerConnect.Azure.Messaging.ServiceBus
             {
                 MessageId = Guid.NewGuid().ToString(),
                 Subject = eventName
-            });
+            }, cancellationToken).ConfigureAwait(false);
 
             _logger.LogInformation("Successfully added message to queue: {QueueName}", _options.QueueName);
         }
