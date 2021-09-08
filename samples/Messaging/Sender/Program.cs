@@ -18,19 +18,23 @@ namespace Sender
         public static async Task Main(string[] args)
         {
             await new HostBuilder()
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddLogging(configure => configure.AddConsole());
-
-                services.AddMessagingSender(options =>
+                .ConfigureAppConfiguration((hostContext, configuration) =>
                 {
-                    options.ConnectionString = "Endpoint=sb://tmf-tst-centralus-servicebusns.servicebus.windows.net/;SharedAccessKeyName=FarmerConnect.Consumer;SharedAccessKey=3NFZIa0EJgHbpGLJcAoXG9PkoocoILWvg1g0VtBYTJg=;EntityPath=tmf-dev-bulk-queue";
-                    options.QueueName = "tmf-dev-bulk-queue";
-                });
 
-                services.AddHostedService<EventBusSenderBackgroundService>();
-            })
-            .RunConsoleAsync();
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddLogging(configure => configure.AddConsole());
+
+                    services.AddMessagingSender(options =>
+                    {
+                        options.ConnectionString = "Endpoint=sb://tmf-tst-centralus-servicebusns.servicebus.windows.net/;SharedAccessKeyName=FarmerConnect.Consumer;SharedAccessKey=3NFZIa0EJgHbpGLJcAoXG9PkoocoILWvg1g0VtBYTJg=;EntityPath=tmf-dev-bulk-queue";
+                        options.QueueName = "tmf-dev-bulk-queue";
+                    });
+
+                    services.AddHostedService<EventBusSenderBackgroundService>();
+                })
+                .RunConsoleAsync();
         }
     }
     public class AcceptEvent : IntegrationEvent
@@ -41,12 +45,10 @@ namespace Sender
     public class EventBusSenderBackgroundService : IHostedService
     {
         private readonly ServiceBusQueueSender _serviceBusQueueSender;
-        private readonly ILogger<EventBusSenderBackgroundService> _logger;
 
-        public EventBusSenderBackgroundService(ServiceBusQueueSender serviceBusQueueSender, ILogger<EventBusSenderBackgroundService> logger)
+        public EventBusSenderBackgroundService(ServiceBusQueueSender serviceBusQueueSender)
         {
             _serviceBusQueueSender = serviceBusQueueSender;
-            _logger = logger;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
