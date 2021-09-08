@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FarmerConnect.Azure.Messaging
+namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
     public class EventBusSubscriptionManager
     {

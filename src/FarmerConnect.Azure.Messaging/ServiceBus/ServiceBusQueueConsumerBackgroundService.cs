@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace FarmerConnect.Azure.Messaging
+namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
     public class ServiceBusQueueConsumerBackgroundService : IHostedService, IDisposable
     {

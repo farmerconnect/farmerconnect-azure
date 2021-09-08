@@ -7,19 +7,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FarmerConnect.Azure.Messaging
+namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
     public class ServiceBusQueueConsumer
     {
         private readonly EventBusSubscriptionManager _subscriptionManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly AzureServiceBusOptions _options;
+        private readonly ServiceBusOptions _options;
         private readonly ServiceBusClient _client;
         private readonly ILogger _logger;
         private ServiceBusProcessor _processor;
         private const string INTEGRATION_EVENT_SUFFIX = "Event";
 
-        public ServiceBusQueueConsumer(EventBusSubscriptionManager subscriptionManager, IServiceProvider serviceProvider, IOptions<AzureServiceBusOptions> options, ILogger<ServiceBusQueueConsumer> logger)
+        public ServiceBusQueueConsumer(EventBusSubscriptionManager subscriptionManager, IServiceProvider serviceProvider, IOptions<ServiceBusOptions> options, ILogger<ServiceBusQueueConsumer> logger)
         {
             _subscriptionManager = subscriptionManager;
             _serviceProvider = serviceProvider;

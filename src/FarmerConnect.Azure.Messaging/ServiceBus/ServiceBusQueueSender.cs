@@ -6,16 +6,16 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FarmerConnect.Azure.Messaging
+namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
     public class ServiceBusQueueSender
     {
-        private readonly AzureServiceBusOptions _options;
+        private readonly ServiceBusOptions _options;
         private readonly ServiceBusClient _client;
         private readonly ILogger<ServiceBusQueueConsumer> _logger;
         private const string INTEGRATION_EVENT_SUFFIX = "Event";
 
-        public ServiceBusQueueSender(IOptions<AzureServiceBusOptions> options, ILogger<ServiceBusQueueConsumer> logger)
+        public ServiceBusQueueSender(IOptions<ServiceBusOptions> options, ILogger<ServiceBusQueueConsumer> logger)
         {
             _options = options.Value;
             _logger = logger;
