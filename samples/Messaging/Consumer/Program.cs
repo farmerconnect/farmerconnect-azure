@@ -80,7 +80,7 @@ namespace Consumer
                 var integrationEvent = (AcceptEvent)@event;
 
                 _logger.LogInformation("Doing the stuff for {TransactionId}...", integrationEvent.TransactionId);
-                await Task.Delay(6000);
+                await Task.Delay(TimeSpan.FromSeconds(3));
                 _logger.LogInformation("...finished the stuff.");
             }
         }
