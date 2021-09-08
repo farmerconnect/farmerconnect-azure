@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FarmerConnect.Azure.Messaging;
 using FarmerConnect.Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ namespace Sender
             await new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configuration) =>
                 {
-
+                    configuration.AddUserSecrets("3b7f83e1-5589-40b5-9102-1757c6860b3d");
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -28,8 +29,8 @@ namespace Sender
 
                     services.AddMessagingSender(options =>
                     {
-                        options.ConnectionString = "Endpoint=sb://tmf-tst-centralus-servicebusns.servicebus.windows.net/;SharedAccessKeyName=FarmerConnect.Consumer;SharedAccessKey=3NFZIa0EJgHbpGLJcAoXG9PkoocoILWvg1g0VtBYTJg=;EntityPath=tmf-dev-bulk-queue";
-                        options.QueueName = "tmf-dev-bulk-queue";
+                        options.ConnectionString = hostContext.Configuration["AzureServiceBus:ConnectionString"];
+                        options.QueueName = hostContext.Configuration["AzureServiceBus:QueueName"];
                     });
 
                     services.AddHostedService<EventBusSenderBackgroundService>();

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FarmerConnect.Azure.Messaging;
 using FarmerConnect.Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,21 +19,25 @@ namespace Consumer
         public static async Task Main(string[] args)
         {
             await new HostBuilder()
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddLogging(configure => configure.AddConsole());
-
-                services.AddScoped<AcceptEventHandler>();
-
-                services.AddMessagingConsumer(options =>
+                .ConfigureAppConfiguration((hostContext, configuration) =>
                 {
-                    options.ConnectionString = "Endpoint=sb://tmf-tst-centralus-servicebusns.servicebus.windows.net/;SharedAccessKeyName=FarmerConnect.Consumer;SharedAccessKey=3NFZIa0EJgHbpGLJcAoXG9PkoocoILWvg1g0VtBYTJg=;EntityPath=tmf-dev-bulk-queue";
-                    options.QueueName = "tmf-dev-bulk-queue";
-                });
+                    configuration.AddUserSecrets("3b7f83e1-5589-40b5-9102-1757c6860b3d");
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddLogging(configure => configure.AddConsole());
 
-                services.AddHostedService<EventBusRegistrationBackgroundService>();
-            })
-            .RunConsoleAsync();
+                    services.AddScoped<AcceptEventHandler>();
+
+                    services.AddMessagingConsumer(options =>
+                    {
+                        options.ConnectionString = hostContext.Configuration["AzureServiceBus:ConnectionString"];
+                        options.QueueName = hostContext.Configuration["AzureServiceBus:QueueName"];
+                    });
+
+                    services.AddHostedService<EventBusRegistrationBackgroundService>();
+                })
+                .RunConsoleAsync();
         }
 
         public class EventBusRegistrationBackgroundService : IHostedService
