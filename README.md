@@ -35,7 +35,7 @@ You can now inject the `BlobStorageService` into your business logic to connect 
 
 Coming soon...
 
-# FarmerConnect.Azure.Messaging [WIP]
+# FarmerConnect.Azure.Messaging
 
 [![NuGet Package Build](https://github.com/farmerconnect/FarmerConnect.Azure/actions/workflows/workflow-messaging.yml/badge.svg?branch=main)](https://github.com/farmerconnect/FarmerConnect.Azure/actions/workflows/workflow-messaging.yml)
 
