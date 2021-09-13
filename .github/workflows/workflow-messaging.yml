@@ -78,7 +78,7 @@ jobs:
       run: azurite-blob &
 
     - name: dotnet test
-      run: dotnet test --configuration Release --filter "Category=Messaging"
+      run: dotnet test --configuration Release --filter "Category=Messaging&Category!=Integration"
 
     - name: dotnet pack
       run: dotnet pack .\src\${{ env.PACKAGE_NAME }}\ --configuration Release --no-build
