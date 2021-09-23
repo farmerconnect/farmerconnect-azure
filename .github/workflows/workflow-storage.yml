@@ -64,8 +64,18 @@ jobs:
     - name: Set Version
       run: nbgv cloud --project ./src/FarmerConnect.Azure.Storage/
 
+    # TODO: When this repository goes public we should enable this
+    #- name: Initialize CodeQL
+    #  uses: github/codeql-action/init@v1
+    #  with:
+    #    languages: csharp
+
     - name: dotnet build
       run: dotnet build --configuration Release
+
+    # TODO: When this repository goes public we should enable this
+    #- name: Perform CodeQL Analysis
+    #  uses: github/codeql-action/analyze@v1
 
     - name: Install NPM
       uses: actions/setup-node@v1
