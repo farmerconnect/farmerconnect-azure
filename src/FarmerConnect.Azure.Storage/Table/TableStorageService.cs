@@ -22,14 +22,15 @@ namespace FarmerConnect.Azure.Storage.Table
         /// Adds a batch of entities to the table
         /// </summary>
         /// <param name="tableAddress">The full table address.</param>
-        /// <param name="listOfEntries">The list of entries to be added.</param>
-        public async Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : class, ITableEntity
+        /// <param name="listOfEntities">The list of entries to be added.</param>
+        public async Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity
         {
 
             var tableReference = new CloudTable(tableAddress);
 
             int rowOffset = 0;
             IList<Task<TableBatchResult>> tableBatchResults = new List<Task<TableBatchResult>>();
+
             while (rowOffset < listOfEntities.Count())
             {
                 var rows = listOfEntities.Skip(rowOffset).Take(TableBatchMaxEntries).ToList();
@@ -38,7 +39,6 @@ namespace FarmerConnect.Azure.Storage.Table
                 var task = Task.Factory.StartNew(() =>
                 {
                     var batch = new TableBatchOperation();
-
                     foreach (var row in rows)
                     {
                         batch.InsertOrReplace(row);
@@ -47,7 +47,7 @@ namespace FarmerConnect.Azure.Storage.Table
                 });
             }
 
-            await Task.WhenAll(tableBatchResults.ToArray());
+            await Task.WhenAll(tableBatchResults);
             return listOfEntities;
         }
 
@@ -56,7 +56,7 @@ namespace FarmerConnect.Azure.Storage.Table
         /// </summary>
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="value">the object to add.</param>
-        public async Task<T> Add<T>(Uri tableAddress, T value) where T : class, ITableEntity
+        public async Task<T> Add<T>(Uri tableAddress, T value) where T : TableStorageEntity
         {
             var tableReference = new CloudTable(tableAddress);
 
@@ -79,7 +79,7 @@ namespace FarmerConnect.Azure.Storage.Table
             var query = new TableQuery<T>()
                 .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
 
-            IEnumerable<T> results = tableReference.ExecuteQuery<T>(query).ToList();
+            IEnumerable<T> results = tableReference.ExecuteQuery<T>(query);
 
             return results;
         }
@@ -105,12 +105,12 @@ namespace FarmerConnect.Azure.Storage.Table
         /// </summary>
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="partitionKey">value of the partition key from which the entries should be deleted.</param>
-        public async Task DeleteByPartitionKey<T>(Uri tableAddress, string partitionKey) where T : ITableEntity, new()
+        public async Task DeleteByPartitionKey(Uri tableAddress, string partitionKey)
         {
             var tableReference = new CloudTable(tableAddress);
 
             var partitionScanQuery =
-                new TableQuery<T>()
+                new TableQuery()
                     .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
 
             TableContinuationToken token = null;
