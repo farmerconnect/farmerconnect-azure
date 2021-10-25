@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.Extensions.Options;
-using Microsoft.Azure.Cosmos.Table;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Options;
 
 namespace FarmerConnect.Azure.Storage.Table
 {
@@ -24,7 +24,7 @@ namespace FarmerConnect.Azure.Storage.Table
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="listOfEntities">The list of entries to be added.
         /// Object must be an instance of "TableStorageEntity" or implement "Microsoft.Azure.Cosmos.Table.ITableEntity"</param>
-        public async Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity, new()
+        public Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity, new()
         {
             var tableReference = new CloudTable(tableAddress);
 
@@ -47,7 +47,7 @@ namespace FarmerConnect.Azure.Storage.Table
                 });
             }
 
-            return listOfEntities;
+            return Task.FromResult(listOfEntities);
         }
 
         /// <summary>
