@@ -22,14 +22,13 @@ namespace FarmerConnect.Azure.Storage.Table
         /// Adds a batch of entities to the table
         /// </summary>
         /// <param name="tableAddress">The full table address.</param>
-        /// <param name="listOfEntities">The list of entries to be added.</param>
-        public async Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity
+        /// <param name="listOfEntities">The list of entries to be added.
+        /// Object must be an instance of "TableStorageEntity" or implement "Microsoft.Azure.Cosmos.Table.ITableEntity"</param>
+        public async Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity, new()
         {
-
             var tableReference = new CloudTable(tableAddress);
 
             int rowOffset = 0;
-            IList<Task<TableBatchResult>> tableBatchResults = new List<Task<TableBatchResult>>();
 
             while (rowOffset < listOfEntities.Count())
             {
@@ -39,15 +38,15 @@ namespace FarmerConnect.Azure.Storage.Table
                 var task = Task.Factory.StartNew(() =>
                 {
                     var batch = new TableBatchOperation();
+
                     foreach (var row in rows)
                     {
                         batch.InsertOrReplace(row);
                     }
-                    tableBatchResults.Add(tableReference.ExecuteBatchAsync(batch));
+                    tableReference.ExecuteBatchAsync(batch);
                 });
             }
 
-            await Task.WhenAll(tableBatchResults);
             return listOfEntities;
         }
 
@@ -55,8 +54,9 @@ namespace FarmerConnect.Azure.Storage.Table
         /// Adds an entity to the table
         /// </summary>
         /// <param name="tableAddress">The full table address.</param>
-        /// <param name="value">the object to add.</param>
-        public async Task<T> Add<T>(Uri tableAddress, T value) where T : TableStorageEntity
+        /// <param name="value">the object to add.
+        /// Object must be an instance of "TableStorageEntity" or implement "Microsoft.Azure.Cosmos.Table.ITableEntity"</param>
+        public async Task<T> Add<T>(Uri tableAddress, T value) where T : TableStorageEntity, new()
         {
             var tableReference = new CloudTable(tableAddress);
 
@@ -67,11 +67,12 @@ namespace FarmerConnect.Azure.Storage.Table
         }
 
         /// <summary>
-        /// Gets all entries that matche the provided partitionKey
+        /// Gets all entries that match the provided partitionKey
         /// </summary>
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="partitionKey">value of the partition key from the entries.</param>
-        public IEnumerable<T> GetByPartitionKey<T>(Uri tableAddress, string partitionKey) where T : ITableEntity, new()
+        /// <returns>Returns a "TableStorageEntity"</returns>
+        public IEnumerable<T> GetByPartitionKey<T>(Uri tableAddress, string partitionKey) where T : TableStorageEntity, new()
         {
 
             var tableReference = new CloudTable(tableAddress);
@@ -79,9 +80,7 @@ namespace FarmerConnect.Azure.Storage.Table
             var query = new TableQuery<T>()
                 .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
 
-            IEnumerable<T> results = tableReference.ExecuteQuery<T>(query);
-
-            return results;
+            return tableReference.ExecuteQuery<T>(query);
         }
 
         /// <summary>
@@ -90,7 +89,8 @@ namespace FarmerConnect.Azure.Storage.Table
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="partitionKey">value of the partition key in which the entry is contained.</param>
         /// <param name="rowKey">value of the row key of the entry.</param>
-        public async Task<T> Get<T>(Uri tableAddress, string partitionKey, string rowKey) where T : class, ITableEntity, new()
+        /// <returns>Returns a "TableStorageEntity"</returns>
+        public async Task<T> Get<T>(Uri tableAddress, string partitionKey, string rowKey) where T : TableStorageEntity, new()
         {
             var tableReference = new CloudTable(tableAddress);
 
@@ -167,8 +167,10 @@ namespace FarmerConnect.Azure.Storage.Table
 
             // create the shared access policy that we will use,
             // with the relevant permissions and expiry time
+            TimeSpan clockSkew = TimeSpan.FromMinutes(15d);
             var sharedAccessPolicy = new SharedAccessTablePolicy
             {
+                SharedAccessStartTime = DateTimeOffset.UtcNow.Subtract(clockSkew),
                 Permissions = SharedAccessTablePermissions.Query |
                   SharedAccessTablePermissions.Add |
                   SharedAccessTablePermissions.Delete |
