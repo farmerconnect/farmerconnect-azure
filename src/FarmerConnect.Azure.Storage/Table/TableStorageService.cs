@@ -24,30 +24,30 @@ namespace FarmerConnect.Azure.Storage.Table
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="listOfEntities">The list of entries to be added.
         /// Object must be an instance of "TableStorageEntity" or implement "Microsoft.Azure.Cosmos.Table.ITableEntity"</param>
-        public Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity, new()
+        public async Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity, new()
         {
             var tableReference = new CloudTable(tableAddress);
 
             int rowOffset = 0;
+
+            IList<Task<TableBatchResult>> tableBatchResults = new List<Task<TableBatchResult>>();
 
             while (rowOffset < listOfEntities.Count())
             {
                 var rows = listOfEntities.Skip(rowOffset).Take(TableBatchMaxEntries).ToList();
                 rowOffset += rows.Count;
 
-                var task = Task.Run(() =>
-                {
-                    var batch = new TableBatchOperation();
+                var batch = new TableBatchOperation();
 
-                    foreach (var row in rows)
-                    {
-                        batch.InsertOrReplace(row);
-                    }
-                    tableReference.ExecuteBatchAsync(batch);
-                });
+                foreach (var row in rows)
+                {
+                    batch.InsertOrReplace(row);
+                }
+                tableBatchResults.Add(tableReference.ExecuteBatchAsync(batch));
             }
 
-            return Task.FromResult(listOfEntities);
+            await Task.WhenAll(tableBatchResults);
+            return listOfEntities;
         }
 
         /// <summary>
@@ -74,7 +74,6 @@ namespace FarmerConnect.Azure.Storage.Table
         /// <returns>Returns a "TableStorageEntity"</returns>
         public IEnumerable<T> GetByPartitionKey<T>(Uri tableAddress, string partitionKey) where T : TableStorageEntity, new()
         {
-
             var tableReference = new CloudTable(tableAddress);
 
             var query = new TableQuery<T>()
