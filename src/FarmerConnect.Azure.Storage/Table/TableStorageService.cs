@@ -24,7 +24,7 @@ namespace FarmerConnect.Azure.Storage.Table
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="listOfEntities">The list of entries to be added.
         /// Object must be an instance of "TableStorageEntity" or implement "Microsoft.Azure.Cosmos.Table.ITableEntity"</param>
-        public async Task<IEnumerable<T>> AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity, new()
+        public async Task AddBatch<T>(Uri tableAddress, IEnumerable<T> listOfEntities) where T : TableStorageEntity, new()
         {
             var tableReference = new CloudTable(tableAddress);
 
@@ -47,7 +47,6 @@ namespace FarmerConnect.Azure.Storage.Table
             }
 
             await Task.WhenAll(tableBatchResults);
-            return listOfEntities;
         }
 
         /// <summary>
@@ -56,14 +55,12 @@ namespace FarmerConnect.Azure.Storage.Table
         /// <param name="tableAddress">The full table address.</param>
         /// <param name="value">the object to add.
         /// Object must be an instance of "TableStorageEntity" or implement "Microsoft.Azure.Cosmos.Table.ITableEntity"</param>
-        public async Task<T> Add<T>(Uri tableAddress, T value) where T : TableStorageEntity, new()
+        public async Task Add<T>(Uri tableAddress, T value) where T : TableStorageEntity, new()
         {
             var tableReference = new CloudTable(tableAddress);
 
             TableOperation insertOrReplaceOperation = TableOperation.InsertOrReplace(value);
-            TableResult result = await tableReference.ExecuteAsync(insertOrReplaceOperation);
-
-            return result.Result as T;
+            await tableReference.ExecuteAsync(insertOrReplaceOperation);
         }
 
         /// <summary>

@@ -87,8 +87,11 @@ jobs:
       shell:  bash
       run: azurite &
 
-    - name: dotnet test
-      run: dotnet test --configuration Release --filter "Category=Storage"
+    - name: dotnet test blob storage
+      run: dotnet test --configuration Release --filter "Category=BlobStorage"
+
+    - name: dotnet test table storage
+      run: dotnet test --configuration Release --filter "Category=TableStorage"
 
     - name: dotnet pack
       run: dotnet pack .\src\${{ env.PACKAGE_NAME }}\  --configuration Release --no-build

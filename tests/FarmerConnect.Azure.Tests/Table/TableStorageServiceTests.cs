@@ -19,7 +19,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task CreatingATableReturnsTheTableAddress()
         {
             // Arrange 
@@ -34,7 +34,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task DeleteTableReturns()
         {
             // Arrange 
@@ -49,7 +49,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task AddReturnsSuccess()
         {
             // Arrange
@@ -70,7 +70,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task GetReturnsSuccess()
         {
             // Arrange
@@ -91,7 +91,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact(Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task AddBatchReturnsSuccess()
         {
             // Arrange
@@ -116,7 +116,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact(Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task DeleteExistingBatch()
         {
             // Arrange
@@ -147,7 +147,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact(Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task DeleteExistingBatchWithContinuationToken()
         {
             // Arrange
@@ -175,7 +175,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task AddToAIncorrectTableAddressThrowsAnException()
         {
             // Arrange
@@ -188,7 +188,7 @@ namespace FarmerConnect.Azure.Tests.Table
         }
 
         [Fact]
-        [Trait("Category", "Storage")]
+        [Trait("Category", "TableStorage")]
         public async Task GetFromDifferentTableReturnsEmpty()
         {
             // Arrange
@@ -196,7 +196,7 @@ namespace FarmerConnect.Azure.Tests.Table
             var tableAddress2 = await _fixture.TableStorageService.CreateTable(_fixture.GetTableName());
 
             var testObject = new TableStorageTestObject("Object Name", "1", "Test");
-            var storageName = await _fixture.TableStorageService.Add<TableStorageTestObject>(new Uri(tableAddress1), testObject);
+            await _fixture.TableStorageService.Add<TableStorageTestObject>(new Uri(tableAddress1), testObject);
 
             // Act
             var result = await _fixture.TableStorageService.Get<TableStorageTestObject>(new Uri(tableAddress2), "Test", "1");
