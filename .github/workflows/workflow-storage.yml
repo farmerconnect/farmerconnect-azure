@@ -85,7 +85,7 @@ jobs:
 
     - name: Run azurite
       shell:  bash
-      run: azurite-table &
+      run: azurite &
 
     - name: dotnet test
       run: dotnet test --configuration Release --filter "Category=Storage"

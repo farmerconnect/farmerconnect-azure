@@ -85,7 +85,7 @@ jobs:
 
     - name: Run azurite
       shell:  bash
-      run: azurite-blob &
+      run: azurite &
 
     - name: dotnet test
       run: dotnet test --configuration Release --filter "Category=Messaging&Category!=Integration"
