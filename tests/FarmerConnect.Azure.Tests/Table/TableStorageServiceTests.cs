@@ -90,7 +90,7 @@ namespace FarmerConnect.Azure.Tests.Table
             returnObject.Name.Should().Be(testObject.Name);
         }
 
-        [Fact (Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
+        [Fact(Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
         [Trait("Category", "Storage")]
         public async Task AddBatchReturnsSuccess()
         {
@@ -101,7 +101,8 @@ namespace FarmerConnect.Azure.Tests.Table
 
             // Act
             var testObjects = new List<TableStorageTestObject>();
-            for (int i = 0 ; i < 150 ; i++) {
+            for (int i = 0; i < 150; i++)
+            {
                 TableStorageTestObject testObject = new TableStorageTestObject("test object", "" + i, "test");
                 testObjects.Add(testObject);
             }
@@ -114,7 +115,7 @@ namespace FarmerConnect.Azure.Tests.Table
             resultObjects.Count().Should().Be(150);
         }
 
-        [Fact (Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
+        [Fact(Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
         [Trait("Category", "Storage")]
         public async Task DeleteExistingBatch()
         {
@@ -145,7 +146,7 @@ namespace FarmerConnect.Azure.Tests.Table
 
         }
 
-        [Fact (Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
+        [Fact(Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
         [Trait("Category", "Storage")]
         public async Task DeleteExistingBatchWithContinuationToken()
         {
