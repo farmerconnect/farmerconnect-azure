@@ -1,5 +1,6 @@
 ﻿using System;
 using FarmerConnect.Azure.Storage.Blob;
+using FarmerConnect.Azure.Storage.Table;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmerConnect.Azure.Storage
@@ -14,8 +15,11 @@ namespace FarmerConnect.Azure.Storage
             return services;
         }
 
-        public static IServiceCollection AddTableStorage(this IServiceCollection services)
+        public static IServiceCollection AddTableStorage(this IServiceCollection services, Action<TableStorageOptions> setupAction)
         {
+            services.Configure(setupAction);
+            services.AddScoped<TableStorageService>();
+
             return services;
         }
     }

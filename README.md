@@ -31,9 +31,24 @@ services.AddBlobStorage(options =>
 
 You can now inject the `BlobStorageService` into your business logic to connect to the blob containers.
 
-## Table Storage [WIP]
+## Table Storage
 
-Coming soon...
+Table Storage is to be used whenever a use for unstructured tabular data comes into place. A good representation of this use case is non-standardized CSV files.
+This storage relies on direct access by row or aggregation by partition key. In case a use case requires filtering by specific fields, this SDK should be extended to accept it. When creating a new table through the `TableStorageService` a new SAS Token is created and the container address will be returned. When you want to add or read from that table you need to pass the proper table address. For reference on design best practices for Table Storage: https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-design
+
+### Getting started
+
+Inside the `Startup.cs` add the following line of code to the `ConfigureServices` method to add the table storage services:
+
+```csharp
+services.AddTableStorage(options =>
+{
+    options.ConnectionString = Configuration.GetConnectionString("TableStorage");
+});
+```
+
+You can now inject the `TableStorageService` into your business logic to connect to the tables.
+
 
 # FarmerConnect.Azure.Messaging
 

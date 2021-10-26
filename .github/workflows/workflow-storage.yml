@@ -31,21 +31,19 @@ jobs:
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+      with:
+        include-prerelease: True
 
     # Format the output of dotnet format
     - name: Add dotnet-format problem matcher
       uses: xt0rted/dotnet-format-problem-matcher@v1
-
-    # Install dotnet format as a global tool
-    - name: Install dotnet format
-      run: dotnet tool update --global dotnet-format
 
     # Run dotnet format
     # By default, the task ensure the exit code is 0
     # If a file needs to be edited by dotnet format, the exit code will be a non-zero value
     # So the task will fail
     - name: Run dotnet format
-      run: dotnet format --fix-whitespace --fix-style warn --fix-analyzers warn --check --verbosity diagnostic
+      run: dotnet format --severity warn --verify-no-changes --verbosity detailed
 
   dotnet-build-test-pack:
     needs: [dotnet-format]
@@ -57,6 +55,8 @@ jobs:
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+      with:
+        include-prerelease: True
 
     - name: Install NBGV
       run: dotnet tool update --global nbgv
@@ -85,10 +85,13 @@ jobs:
 
     - name: Run azurite
       shell:  bash
-      run: azurite-blob &
+      run: azurite &
 
-    - name: dotnet test
-      run: dotnet test --configuration Release --filter "Category=Storage"
+    - name: dotnet test blob storage
+      run: dotnet test --configuration Release --filter "Category=BlobStorage"
+
+    - name: dotnet test table storage
+      run: dotnet test --configuration Release --filter "Category=TableStorage"
 
     - name: dotnet pack
       run: dotnet pack .\src\${{ env.PACKAGE_NAME }}\  --configuration Release --no-build
@@ -108,6 +111,8 @@ jobs:
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+      with:
+        include-prerelease: True
 
     - name: dotnet nuget push
       run: dotnet nuget push ./**/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/farmerconnect/index.json"
