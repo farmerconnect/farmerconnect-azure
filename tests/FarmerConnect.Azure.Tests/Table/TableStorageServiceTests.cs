@@ -131,7 +131,8 @@ namespace FarmerConnect.Azure.Tests.Table
             var containerAddress = await _fixture.TableStorageService.CreateTable(name);
 
             IList<TableStorageTestObject> testObjects = new List<TableStorageTestObject>();
-            for (int i = 0 ; i < 2500 ; i++) {
+            for (int i = 0; i < 2500; i++)
+            {
                 TableStorageTestObject testObject = new TableStorageTestObject("Test" + i, "" + i, "test");
                 testObjects.Add(testObject);
             }
