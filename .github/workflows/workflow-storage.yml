@@ -31,6 +31,8 @@ jobs:
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+      with:
+        include-prerelease: True
 
     # Format the output of dotnet format
     - name: Add dotnet-format problem matcher
@@ -53,6 +55,8 @@ jobs:
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+      with:
+        include-prerelease: True
 
     - name: Install NBGV
       run: dotnet tool update --global nbgv
@@ -104,6 +108,8 @@ jobs:
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+      with:
+        include-prerelease: True
 
     - name: dotnet nuget push
       run: dotnet nuget push ./**/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/farmerconnect/index.json"
