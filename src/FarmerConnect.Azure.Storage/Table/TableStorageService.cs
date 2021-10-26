@@ -35,7 +35,7 @@ namespace FarmerConnect.Azure.Storage.Table
                 var rows = listOfEntities.Skip(rowOffset).Take(TableBatchMaxEntries).ToList();
                 rowOffset += rows.Count;
 
-                var task = Task.Factory.StartNew(() =>
+                var task = Task.Run(() =>
                 {
                     var batch = new TableBatchOperation();
 
@@ -128,21 +128,18 @@ namespace FarmerConnect.Azure.Storage.Table
                     var rows = segment.Skip(rowOffset).Take(TableBatchMaxEntries).ToList();
                     rowOffset += rows.Count;
 
-                    var task = Task.Factory.StartNew(() =>
-                    {
-                        var batchOperation = new TableBatchOperation();
+                    var batchOperation = new TableBatchOperation();
 
-                        foreach (var row in rows)
-                        {
-                            batchOperation.Delete(row);
-                        }
-                        tableBatchResults.Add(tableReference.ExecuteBatchAsync(batchOperation));
-                    });
+                    foreach (var row in rows)
+                    {
+                        batchOperation.Delete(row);
+                    }
+                    tableBatchResults.Add(tableReference.ExecuteBatchAsync(batchOperation));
                 }
             }
             while (token != null);
 
-            await Task.WhenAll(tableBatchResults.ToArray());
+            await Task.WhenAll(tableBatchResults);
         }
 
         /// <summary>

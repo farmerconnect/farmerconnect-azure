@@ -124,6 +124,27 @@ namespace FarmerConnect.Azure.Tests.Table
 
         [Fact]
         [Trait("Category", "Storage")]
+        public async Task DeleteExistingBatchWithContinuationToken()
+        {
+            // Arrange
+            var name = _fixture.GetTableName();
+            var containerAddress = await _fixture.TableStorageService.CreateTable(name);
+
+            IList<TableStorageTestObject> testObjects = new List<TableStorageTestObject>();
+            for (int i = 0 ; i < 2500 ; i++) {
+                TableStorageTestObject testObject = new TableStorageTestObject("Test" + i, "" + i, "test");
+                testObjects.Add(testObject);
+            }
+
+            await _fixture.TableStorageService.AddBatch<TableStorageTestObject>(new Uri(containerAddress), testObjects);
+
+            // Act
+            await _fixture.TableStorageService.DeleteByPartitionKey(new Uri(containerAddress), "test");
+
+        }
+
+        [Fact]
+        [Trait("Category", "Storage")]
         public async Task AddToAIncorrectTableAddressThrowsAnException()
         {
             // Arrange
