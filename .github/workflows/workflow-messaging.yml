@@ -1,6 +1,7 @@
 ﻿name: FarmerConnect.Azure.Messaging
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - main
