@@ -149,18 +149,6 @@ public class AcceptEventHandler : IIntegrationEventHandler
 }
 ```
 
-# Add GitHub to NuGet sources
-
-We are using the GitHub NuGet feed. To be able to access it you need to add this feed to your NuGet Config file. Because the packages might be private you will need to provide a PAT (Personal Access Token). You can get your PAT from your GitHub profile.
-
-Then run the following command: 
-
-```powershell
-dotnet nuget add source --username USERNAME --password PERSONAL_ACCESS_TOKEN --name farmerconnect-github "https://nuget.pkg.github.com/farmerconnect/index.json"
-```
-
-Replace `USERNAME` and `PERSONAL_ACCESS_TOKEN` with your values.
-
 # Source Link
 
 This repository has source link enabled. This enables stepping into the code of this NuGet Package. Follow the instructions [here](https://docs.microsoft.com/en-us/dotnet/standard/library-guidance/sourcelink) if required.
