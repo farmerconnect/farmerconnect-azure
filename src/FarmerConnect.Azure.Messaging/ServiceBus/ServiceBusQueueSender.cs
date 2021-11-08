@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
-    public class ServiceBusQueueSender
+    public class ServiceBusQueueSender : IServiceBusQueueSender
     {
         private readonly ServiceBusOptions _options;
         private readonly ServiceBusClient _client;

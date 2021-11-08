@@ -21,7 +21,7 @@ namespace FarmerConnect.Azure.Messaging
         {
             services.Configure(setupAction);
 
-            services.AddSingleton<ServiceBusQueueSender>();
+            services.AddSingleton<IServiceBusQueueSender, ServiceBusQueueSender>();
 
             return services;
         }
