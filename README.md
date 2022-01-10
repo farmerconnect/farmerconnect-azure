@@ -4,7 +4,7 @@
 
 <br />
 
-This repository holds all the packages that have been standardized inside of FarmerConnect SA on how to use different Azure resources and patterns.
+This repository holds all the packages that have been standardized inside farmer connect on how to use different Azure resources and patterns.
 
 # FarmerConnect.Azure.Storage
 
