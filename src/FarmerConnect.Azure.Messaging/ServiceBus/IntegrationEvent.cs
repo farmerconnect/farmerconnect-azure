@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
-    public class IntegrationEvent
+    public abstract class IntegrationEvent
     {
         public IntegrationEvent()
         {
