@@ -19,8 +19,8 @@ namespace FarmerConnect.Azure.Storage.Blob
         }
 
         /// <summary>
-        /// Upload a file to blob storage. This method uses a stream and request stream 
-        /// can be piped through the server and directly to the blob storage. The downside 
+        /// Upload a file to blob storage. This method uses a stream and request stream
+        /// can be piped through the server and directly to the blob storage. The downside
         /// is that we do not check the content (Extension, FileSize, Signature, Virus Scanning).
         /// </summary>
         /// <param name="containerAddress">The full container address.</param>
@@ -91,6 +91,37 @@ namespace FarmerConnect.Azure.Storage.Blob
             // create the container
             await containerReference.CreateAsync();
 
+            // create the URI a client can use to get access to just this container
+            return await CreateSharedAccessPolicy(containerName);
+        }
+
+        /// <summary>
+        /// Deletes a given container from the storage account
+        /// </summary>
+        /// <param name="containerName">The name of the container that shall be deleted.</param>
+        public async Task<bool> DeleteContainer(string containerName)
+        {
+            var cloudStorageAccount = CloudStorageAccount.Parse(_options.ConnectionString);
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            var containerReference = cloudBlobClient.GetContainerReference(containerName);
+            return await containerReference.DeleteIfExistsAsync();
+        }
+
+        /// <summary>
+        /// Rotates the SAS Token on the blob container
+        /// </summary>
+        /// <param name="containerName">The name of the container where the SAS Token should be rotated</param>
+        public async Task<string> RotateSASToken(string containerName)
+        {
+            return await CreateSharedAccessPolicy(containerName);
+        }
+
+        private async Task<string> CreateSharedAccessPolicy(string containerName)
+        {
+            var cloudStorageAccount = CloudStorageAccount.Parse(_options.ConnectionString);
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            var containerReference = cloudBlobClient.GetContainerReference(containerName);
+
             // create the shared access policy that we will use,
             // with the relevant permissions and expiry time
             var sharedAccessPolicy = new SharedAccessBlobPolicy
@@ -121,18 +152,6 @@ namespace FarmerConnect.Azure.Storage.Blob
 
             // create the URI a client can use to get access to just this container
             return $"{containerReference.Uri}{containerSignature}";
-        }
-
-        /// <summary>
-        /// Deletes a given container from the storage account
-        /// </summary>
-        /// <param name="containerName">The name of the container that shall be deleted.</param>
-        public async Task<bool> DeleteContainer(string containerName)
-        {
-            var cloudStorageAccount = CloudStorageAccount.Parse(_options.ConnectionString);
-            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-            var containerReference = cloudBlobClient.GetContainerReference(containerName);
-            return await containerReference.DeleteIfExistsAsync();
         }
     }
 }
