@@ -97,6 +97,20 @@ namespace FarmerConnect.Azure.Storage.Table
         }
 
         /// <summary>
+        /// Gets all the entries that match the given filter
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tableAddress">The full table address.</param>
+        /// <param name="filter">Querieble filter. <code>"(PartitionKey eq '001' and ColumnA lt 100)"</code></param>
+        /// <returns></returns>
+        public IEnumerable<T> Query<T>(Uri tableAddress, string filter) where T : TableStorageEntity, new()
+        {
+            var tableReference = new CloudTable(tableAddress);
+            var query = new TableQuery<T>().Where(filter);
+            return tableReference.ExecuteQuery<T>(query);
+        }
+
+        /// <summary>
         /// Deletes all entries from a table that match the provided partition key.
         /// </summary>
         /// <param name="tableAddress">The full table address.</param>
