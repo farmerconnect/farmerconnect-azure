@@ -22,7 +22,7 @@ namespace FarmerConnect.Azure.Tests.Table
         [Trait("Category", "TableStorage")]
         public async Task CreatingATableReturnsTheTableAddress()
         {
-            // Arrange 
+            // Arrange
             var name = _fixture.GetTableName();
 
             // Act
@@ -37,7 +37,7 @@ namespace FarmerConnect.Azure.Tests.Table
         [Trait("Category", "TableStorage")]
         public async Task DeleteTableReturns()
         {
-            // Arrange 
+            // Arrange
             var name = _fixture.GetTableName();
             _ = await _fixture.TableStorageService.CreateTable(name);
 
@@ -143,7 +143,6 @@ namespace FarmerConnect.Azure.Tests.Table
             var remainingEntry = _fixture.TableStorageService.Get<TableStorageTestObject>(uri, "anotherkey", "2");
 
             remainingEntry.Should().NotBeNull();
-
         }
 
         [Fact(Skip = "Batch returns 403. Reason is probably missing support for SAS tokens: https://github.com/Azure/Azurite/issues/959")]
@@ -203,6 +202,53 @@ namespace FarmerConnect.Azure.Tests.Table
 
             // Assert
             result.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", "TableStorage")]
+        public async Task QueryReturnsSuccess()
+        {
+            // Arrange
+            var tableName = _fixture.GetTableName();
+            var tableAddress = await _fixture.TableStorageService.CreateTable(tableName);
+
+            var list = new List<TableStorageTestObject>()
+            {
+                new("first", "001", "00A"),
+                new("second", "002", "00A"),
+                new("third", "003", "00A"),
+                new("fourth", "004", "00B"),
+            };
+
+            var inserts = list.Select(item => _fixture.TableStorageService.Add(new Uri(tableAddress), item));
+            await Task.WhenAll(inserts);
+
+            // Act
+            var onlyPartitionA = _fixture.TableStorageService.Query<TableStorageTestObject>(new Uri(tableAddress), "PartitionKey eq '00A'");
+            var onlyPartitionB = _fixture.TableStorageService.Query<TableStorageTestObject>(new Uri(tableAddress), "PartitionKey eq '00B'");
+            var partitionAWithFilteredName = _fixture.TableStorageService.Query<TableStorageTestObject>(new Uri(tableAddress),
+                "PartitionKey eq '00A' and (Name eq 'first' or Name eq 'invalid')");
+
+            // Assert
+            onlyPartitionA.Should().HaveCount(3);
+            onlyPartitionB.Should().HaveCount(1);
+            partitionAWithFilteredName.Should().HaveCount(1);
+            partitionAWithFilteredName.Should().OnlyContain(a => a.RowKey.Equals("001"));
+        }
+
+        [Fact]
+        [Trait("Category", "TableStorage")]
+        public async Task QueryShouldThrowException()
+        {
+            // Arrange
+            var tableName = _fixture.GetTableName();
+            var tableAddress = await _fixture.TableStorageService.CreateTable(tableName);
+
+            // Act
+            Action act = () => _fixture.TableStorageService.Query<TableStorageTestObject>(new Uri(tableAddress), "<invalid_command>; insert into table").ToList();
+
+            // Assert
+            act.Should().Throw<StorageException>();
         }
 
         public class TableStorageTestObject : TableStorageEntity
