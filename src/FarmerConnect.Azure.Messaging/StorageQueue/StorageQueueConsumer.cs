@@ -1,12 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Azure.Storage.Queues;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Azure.Storage.Queues;
-using System.Text.Json;
-using System;
 
 namespace FarmerConnect.Azure.Messaging.StorageQueue
 {

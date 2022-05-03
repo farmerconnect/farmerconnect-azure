@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FarmerConnect.Azure.Messaging;
-using FarmerConnect.Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
