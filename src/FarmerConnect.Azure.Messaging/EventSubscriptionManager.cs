@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FarmerConnect.Azure.Messaging.ServiceBus
+namespace FarmerConnect.Azure.Messaging
 {
-    public class EventBusSubscriptionManager
+    public class EventSubscriptionManager
     {
         private readonly Dictionary<string, List<Type>> _handlers = new();
         private readonly List<Type> _eventTypes = new();

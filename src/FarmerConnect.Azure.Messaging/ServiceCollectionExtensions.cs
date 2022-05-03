@@ -6,22 +6,22 @@ namespace FarmerConnect.Azure.Messaging
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddMessagingConsumer(this IServiceCollection services, Action<ServiceBusOptions> setupAction)
+        public static IServiceCollection AddServiceBusConsumer(this IServiceCollection services, Action<MessagingOptions> setupAction)
         {
             services.Configure(setupAction);
 
             services.AddSingleton<ServiceBusQueueConsumer>();
-            services.AddSingleton<EventBusSubscriptionManager>();
+            services.AddSingleton<EventSubscriptionManager>();
             services.AddHostedService<ServiceBusQueueConsumerBackgroundService>();
 
             return services;
         }
 
-        public static IServiceCollection AddMessagingSender(this IServiceCollection services, Action<ServiceBusOptions> setupAction)
+        public static IServiceCollection AddServiceBusSender(this IServiceCollection services, Action<MessagingOptions> setupAction)
         {
             services.Configure(setupAction);
 
-            services.AddSingleton<IServiceBusQueueSender, ServiceBusQueueSender>();
+            services.AddSingleton<IQueueSender, ServiceBusQueueSender>();
 
             return services;
         }

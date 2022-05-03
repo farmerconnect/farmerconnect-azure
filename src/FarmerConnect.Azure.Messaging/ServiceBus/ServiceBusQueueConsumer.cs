@@ -11,15 +11,15 @@ namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
     public class ServiceBusQueueConsumer
     {
-        private readonly EventBusSubscriptionManager _subscriptionManager;
+        private readonly EventSubscriptionManager _subscriptionManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ServiceBusOptions _options;
+        private readonly MessagingOptions _options;
         private readonly ServiceBusClient _client;
         private readonly ILogger _logger;
         private ServiceBusProcessor _processor;
         private const string INTEGRATION_EVENT_SUFFIX = "Event";
 
-        public ServiceBusQueueConsumer(EventBusSubscriptionManager subscriptionManager, IServiceProvider serviceProvider, IOptions<ServiceBusOptions> options, ILogger<ServiceBusQueueConsumer> logger)
+        public ServiceBusQueueConsumer(EventSubscriptionManager subscriptionManager, IServiceProvider serviceProvider, IOptions<MessagingOptions> options, ILogger<ServiceBusQueueConsumer> logger)
         {
             _subscriptionManager = subscriptionManager;
             _serviceProvider = serviceProvider;

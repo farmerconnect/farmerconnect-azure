@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace FarmerConnect.Azure.Messaging.ServiceBus
+namespace FarmerConnect.Azure.Messaging
 {
     public abstract class IntegrationEvent
     {
