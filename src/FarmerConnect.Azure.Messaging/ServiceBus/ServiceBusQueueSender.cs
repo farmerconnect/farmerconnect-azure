@@ -37,7 +37,7 @@ namespace FarmerConnect.Azure.Messaging.ServiceBus
                 Subject = eventName
             }, cancellationToken).ConfigureAwait(false);
 
-            _logger.LogInformation("Successfully added message to queue: {QueueName}", _options.QueueName);
+            _logger.LogDebug("Successfully added message to queue: {QueueName}", _options.QueueName);
         }
     }
 }
