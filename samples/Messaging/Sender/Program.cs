@@ -25,15 +25,21 @@ namespace Sender
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddLogging(configure => configure.AddConsole());
+                    services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug));
 
-                    services.AddMessagingSender(options =>
+                    //services.AddServiceBusSender(options =>
+                    //{
+                    //    options.ConnectionString = hostContext.Configuration["Messaging:ConnectionString"];
+                    //    options.QueueName = hostContext.Configuration["Messaging:QueueName"];
+                    //});
+
+                    services.AddStorageQueueSender(options =>
                     {
-                        options.ConnectionString = hostContext.Configuration["AzureServiceBus:ConnectionString"];
-                        options.QueueName = hostContext.Configuration["AzureServiceBus:QueueName"];
+                        options.ConnectionString = hostContext.Configuration["Messaging:ConnectionString"];
+                        options.QueueName = hostContext.Configuration["Messaging:QueueName"];
                     });
 
-                    services.AddHostedService<EventBusSenderBackgroundService>();
+                    services.AddHostedService<MessagingBackgroundService>();
                 })
                 .RunConsoleAsync();
         }
@@ -43,13 +49,13 @@ namespace Sender
         public string TransactionId { get; set; }
     }
 
-    public class EventBusSenderBackgroundService : IHostedService
+    public class MessagingBackgroundService : IHostedService
     {
-        private readonly ServiceBusQueueSender _serviceBusQueueSender;
+        private readonly IQueueSender _queueSender;
 
-        public EventBusSenderBackgroundService(ServiceBusQueueSender serviceBusQueueSender)
+        public MessagingBackgroundService(IQueueSender queueSender)
         {
-            _serviceBusQueueSender = serviceBusQueueSender;
+            _queueSender = queueSender;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -60,9 +66,9 @@ namespace Sender
                 {
                     TransactionId = Guid.NewGuid().ToString()
                 };
-                await _serviceBusQueueSender.SendMessage(@event, cancellationToken);
+                await _queueSender.SendMessage(@event, cancellationToken);
 
-                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(1400), cancellationToken);
             }
         }
 
