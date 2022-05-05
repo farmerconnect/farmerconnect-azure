@@ -89,6 +89,8 @@ namespace FarmerConnect.Azure.Messaging.StorageQueue
                         {
                             await queue.DeleteMessageAsync(message.MessageId, message.PopReceipt, stoppingToken);
                         }
+
+                        await Task.Delay(100, stoppingToken);
                     }
                 }
                 else
