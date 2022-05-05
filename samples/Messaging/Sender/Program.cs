@@ -65,7 +65,7 @@ namespace Sender
                 {
                     TransactionId = Guid.NewGuid().ToString()
                 };
-                await _queueSender.SendMessage(@event, cancellationToken);
+                await _queueSender.SendMessageAsync(@event, cancellationToken);
 
                 await Task.Delay(TimeSpan.FromMilliseconds(1400), cancellationToken);
             }

@@ -5,6 +5,6 @@ namespace FarmerConnect.Azure.Messaging
 {
     public interface IQueueSender
     {
-        Task SendMessage(IntegrationEvent @event, CancellationToken cancellationToken = default);
+        Task SendMessageAsync(IntegrationEvent @event, CancellationToken cancellationToken = default);
     }
 }

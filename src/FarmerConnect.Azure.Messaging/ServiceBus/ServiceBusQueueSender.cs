@@ -24,7 +24,7 @@ namespace FarmerConnect.Azure.Messaging.ServiceBus
             _client = new ServiceBusClient(_options.ConnectionString);
         }
 
-        public async Task SendMessage(IntegrationEvent @event, CancellationToken cancellationToken = default)
+        public async Task SendMessageAsync(IntegrationEvent @event, CancellationToken cancellationToken = default)
         {
             var eventName = @event.GetType().Name.Replace(INTEGRATION_EVENT_SUFFIX, "");
             var jsonMessage = JsonSerializer.Serialize(@event, @event.GetType());

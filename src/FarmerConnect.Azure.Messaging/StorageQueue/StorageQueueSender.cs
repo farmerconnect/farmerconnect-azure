@@ -18,7 +18,7 @@ namespace FarmerConnect.Azure.Messaging.StorageQueue
             _options = options.Value;
         }
 
-        public async Task SendMessage(IntegrationEvent @event, CancellationToken cancellationToken = default)
+        public async Task SendMessageAsync(IntegrationEvent @event, CancellationToken cancellationToken = default)
         {
             var queue = new QueueClient(_options.ConnectionString, _options.QueueName);
             await queue.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
