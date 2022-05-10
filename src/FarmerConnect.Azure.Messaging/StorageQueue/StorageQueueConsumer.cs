@@ -17,7 +17,7 @@ namespace FarmerConnect.Azure.Messaging.StorageQueue
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<StorageQueueConsumer> _logger;
 
-        public StorageQueueConsumer(EventSubscriptionManager subscriptionManager, IOptionsSnapshot<MessagingOptions> options, IServiceProvider serviceProvider, ILogger<StorageQueueConsumer> logger)
+        public StorageQueueConsumer(EventSubscriptionManager subscriptionManager, IOptions<MessagingOptions> options, IServiceProvider serviceProvider, ILogger<StorageQueueConsumer> logger)
         {
             _subscriptionManager = subscriptionManager;
             _options = options.Value;

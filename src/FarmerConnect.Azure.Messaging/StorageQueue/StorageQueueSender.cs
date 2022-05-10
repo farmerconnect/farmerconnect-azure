@@ -12,7 +12,7 @@ namespace FarmerConnect.Azure.Messaging.StorageQueue
         private readonly ILogger<StorageQueueSender> _logger;
         private readonly MessagingOptions _options;
 
-        public StorageQueueSender(IOptionsSnapshot<MessagingOptions> options, ILogger<StorageQueueSender> logger)
+        public StorageQueueSender(IOptions<MessagingOptions> options, ILogger<StorageQueueSender> logger)
         {
             _logger = logger;
             _options = options.Value;
