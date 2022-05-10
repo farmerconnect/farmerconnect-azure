@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FarmerConnect.Azure.Messaging;
-using FarmerConnect.Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,27 +24,36 @@ namespace Consumer
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddLogging(configure => configure.AddConsole());
+                    services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug));
 
                     services.AddScoped<AcceptEventHandler>();
+                    services.AddScoped<SecondAcceptEventHandler>();
 
-                    services.AddMessagingConsumer(options =>
+                    //services.AddServiceBusConsumer(options =>
+                    //{
+                    //    options.ConnectionString = hostContext.Configuration["Messaging:ConnectionString"];
+                    //    options.QueueName = hostContext.Configuration["Messaging:QueueName"];
+                    //});
+
+                    services.AddStorageQueueConsumer(options =>
                     {
-                        options.ConnectionString = hostContext.Configuration["AzureServiceBus:ConnectionString"];
-                        options.QueueName = hostContext.Configuration["AzureServiceBus:QueueName"];
+                        options.ConnectionString = hostContext.Configuration["Messaging:ConnectionString"];
+                        options.QueueName = hostContext.Configuration["Messaging:QueueName"];
+                        //options.MaxMessages = 1;
+                        // options.MaxPollingInterval = 1000;
                     });
 
-                    services.AddHostedService<EventBusRegistrationBackgroundService>();
+                    services.AddHostedService<EventRegistrationBackgroundService>();
                 })
                 .RunConsoleAsync();
         }
 
-        public class EventBusRegistrationBackgroundService : IHostedService
+        public class EventRegistrationBackgroundService : IHostedService
         {
-            private readonly EventBusSubscriptionManager _subscriptionManager;
-            private readonly ILogger<EventBusRegistrationBackgroundService> _logger;
+            private readonly EventSubscriptionManager _subscriptionManager;
+            private readonly ILogger<EventRegistrationBackgroundService> _logger;
 
-            public EventBusRegistrationBackgroundService(EventBusSubscriptionManager subscriptionManager, ILogger<EventBusRegistrationBackgroundService> logger)
+            public EventRegistrationBackgroundService(EventSubscriptionManager subscriptionManager, ILogger<EventRegistrationBackgroundService> logger)
             {
                 _subscriptionManager = subscriptionManager;
                 _logger = logger;
@@ -54,6 +62,7 @@ namespace Consumer
             public Task StartAsync(CancellationToken cancellationToken)
             {
                 _subscriptionManager.Subscribe<AcceptEvent, AcceptEventHandler>();
+                _subscriptionManager.Subscribe<AcceptEvent, SecondAcceptEventHandler>();
 
                 _logger.LogInformation("Completed event handler registration");
 
@@ -87,6 +96,25 @@ namespace Consumer
                 _logger.LogInformation("Doing the stuff for {TransactionId}...", integrationEvent.TransactionId);
                 await Task.Delay(TimeSpan.FromSeconds(3));
                 _logger.LogInformation("...finished the stuff.");
+            }
+        }
+
+        public class SecondAcceptEventHandler : IIntegrationEventHandler
+        {
+            private readonly ILogger<SecondAcceptEventHandler> _logger;
+
+            public SecondAcceptEventHandler(ILogger<SecondAcceptEventHandler> logger)
+            {
+                _logger = logger;
+            }
+
+            public async Task Handle(object @event)
+            {
+                var integrationEvent = (AcceptEvent)@event;
+
+                _logger.LogInformation("Doing other stuff for {TransactionId}...", integrationEvent.TransactionId);
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                _logger.LogInformation("...finished the other stuff.");
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace FarmerConnect.Azure.Messaging.ServiceBus
+namespace FarmerConnect.Azure.Messaging
 {
     public interface IIntegrationEventHandler
     {

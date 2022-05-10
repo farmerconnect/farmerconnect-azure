@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 
 namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
-    public class ServiceBusQueueConsumerBackgroundService : IHostedService, IDisposable
+    public class ServiceBusHostedService : IHostedService, IDisposable
     {
         private bool _disposedValue;
-        private readonly ILogger<ServiceBusQueueConsumerBackgroundService> _logger;
+        private readonly ILogger<ServiceBusHostedService> _logger;
         private readonly ServiceBusQueueConsumer _serviceBusQueueConsumer;
 
-        public ServiceBusQueueConsumerBackgroundService(ServiceBusQueueConsumer serviceBusQueueConsumer, ILogger<ServiceBusQueueConsumerBackgroundService> logger)
+        public ServiceBusHostedService(ServiceBusQueueConsumer serviceBusQueueConsumer, ILogger<ServiceBusHostedService> logger)
         {
             _serviceBusQueueConsumer = serviceBusQueueConsumer;
             _logger = logger;

@@ -9,14 +9,14 @@ using Microsoft.Extensions.Options;
 
 namespace FarmerConnect.Azure.Messaging.ServiceBus
 {
-    public class ServiceBusQueueSender : IServiceBusQueueSender
+    public class ServiceBusQueueSender : IQueueSender
     {
-        private readonly ServiceBusOptions _options;
+        private readonly MessagingOptions _options;
         private readonly ServiceBusClient _client;
         private readonly ILogger<ServiceBusQueueConsumer> _logger;
         private const string INTEGRATION_EVENT_SUFFIX = "Event";
 
-        public ServiceBusQueueSender(IOptions<ServiceBusOptions> options, ILogger<ServiceBusQueueConsumer> logger)
+        public ServiceBusQueueSender(IOptions<MessagingOptions> options, ILogger<ServiceBusQueueConsumer> logger)
         {
             _options = options.Value;
             _logger = logger;
@@ -24,7 +24,7 @@ namespace FarmerConnect.Azure.Messaging.ServiceBus
             _client = new ServiceBusClient(_options.ConnectionString);
         }
 
-        public async Task SendMessage(IntegrationEvent @event, CancellationToken cancellationToken = default)
+        public async Task SendMessageAsync(IntegrationEvent @event, CancellationToken cancellationToken = default)
         {
             var eventName = @event.GetType().Name.Replace(INTEGRATION_EVENT_SUFFIX, "");
             var jsonMessage = JsonSerializer.Serialize(@event, @event.GetType());
@@ -37,7 +37,7 @@ namespace FarmerConnect.Azure.Messaging.ServiceBus
                 Subject = eventName
             }, cancellationToken).ConfigureAwait(false);
 
-            _logger.LogInformation("Successfully added message to queue: {QueueName}", _options.QueueName);
+            _logger.LogDebug("Successfully added message to queue: {QueueName}", _options.QueueName);
         }
     }
 }
