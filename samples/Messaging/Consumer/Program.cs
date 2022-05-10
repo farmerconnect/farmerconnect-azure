@@ -39,6 +39,8 @@ namespace Consumer
                     {
                         options.ConnectionString = hostContext.Configuration["Messaging:ConnectionString"];
                         options.QueueName = hostContext.Configuration["Messaging:QueueName"];
+                        //options.MaxMessages = 1;
+                        // options.MaxPollingInterval = 1000;
                     });
 
                     services.AddHostedService<EventRegistrationBackgroundService>();

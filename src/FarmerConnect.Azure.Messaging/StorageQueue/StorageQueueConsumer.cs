@@ -17,9 +17,6 @@ namespace FarmerConnect.Azure.Messaging.StorageQueue
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<StorageQueueConsumer> _logger;
 
-        private const int MaxPollingInterval = 51200; // This is the maximum polling interval. Since we pay connections to the storage account this could lead to unwanted cost if not high enough.
-        private const int MaxMessages = 1; // Maximum number of messages to receive at once. If set to one then the behaviour is more similar to the service bus implementation with pub / sub.
-
         public StorageQueueConsumer(EventSubscriptionManager subscriptionManager, IOptionsSnapshot<MessagingOptions> options, IServiceProvider serviceProvider, ILogger<StorageQueueConsumer> logger)
         {
             _subscriptionManager = subscriptionManager;
@@ -44,7 +41,7 @@ namespace FarmerConnect.Azure.Messaging.StorageQueue
                 // After subsequent failed attempts to get a queue message, the wait time continues to increase until it reaches the maximum wait time, which defaults to one minute.
                 // The maximum wait time is configurable via the maxPollingInterval property in the host.json file.
 
-                var messages = queue.ReceiveMessages(MaxMessages, cancellationToken: stoppingToken).Value;
+                var messages = queue.ReceiveMessages(_options.MaxMessages, cancellationToken: stoppingToken).Value;
                 if (messages.Length > 0)
                 {
                     _logger.LogDebug("We have some new messages, let's process them");
@@ -95,7 +92,7 @@ namespace FarmerConnect.Azure.Messaging.StorageQueue
                 }
                 else
                 {
-                    if (waitTime < MaxPollingInterval)
+                    if (waitTime < _options.MaxPollingInterval)
                     {
                         waitTime *= 2;
                     }
